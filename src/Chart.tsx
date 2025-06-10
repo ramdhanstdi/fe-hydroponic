@@ -61,8 +61,9 @@ const Chart: React.FC<ChartProps> = ({ title, description, data }) => {
     });
 
     const allValues = filteredDatasets.flatMap((ds) => ds.data);
-    const lowest = Math.min(...allValues);
-    const highest = Math.max(...allValues);
+    const lowest = Math.min(...allValues.flat(1));
+    const highest = Math.max(...allValues.flat(1));
+
     setMinMax([lowest, highest]);
 
     return {

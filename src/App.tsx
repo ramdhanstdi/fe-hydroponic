@@ -29,6 +29,19 @@ function App() {
     data: { name: "humidity", data: [] },
   });
 
+  const singleData = async (from: string, to: string) => {
+    try {
+      const response = await fetch(
+        `https://be-hydroponic.vercel.app/hydroponics?from=${from}&to=${to}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch");
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchData = async (from: string, to: string) => {
     try {
       const response = await fetch(
@@ -43,21 +56,27 @@ function App() {
       const temperatureData = result.map((item) => item.temperature);
       const humidityData = result.map((item) => item.humidity);
 
-      const finalChartData = {
+      const ppm = {
         time,
-        data: [
-          { name: "ppm", data: ppmData },
-          { name: "light", data: lightData },
-          { name: "temperature", data: temperatureData },
-          { name: "humidity", data: humidityData },
-        ],
+        data: [{ name: "ppm", data: ppmData }],
+      };
+      const light = {
+        time,
+        data: [{ name: "light", data: lightData }],
+      };
+      const temperature = {
+        time,
+        data: [{ name: "temperature", data: temperatureData }],
+      };
+      const humidity = {
+        time,
+        data: [{ name: "humidity", data: humidityData }],
       };
 
-      setPpm(finalChartData);
+      setPpm(ppm);
       setLight(light);
       setTemperature(temperature);
       setHumidity(humidity);
-      setData(result);
     } catch (error) {
       message.error("Fetch failed: " + error);
     }
@@ -68,30 +87,18 @@ function App() {
     const to = dateTo.endOf("day").toISOString();
     fetchData(from, to);
   }, [dateFrom, dateTo]);
+
+  useEffect(() => {
+    const from = dateFrom.startOf("day").toISOString();
+    const to = dateTo.endOf("day").toISOString();
+    singleData(from, to);
+  }, []);
   return (
     <ConfigProvider>
       <div className="p-4 space-y-4">
-        <div className="flex items-center gap-4">
-          <div>
-            <label className="font-semibold block">From Date:</label>
-            <DatePicker
-              value={dateFrom}
-              onChange={(date) => date && setDateFrom(date)}
-              format="YYYY-MM-DD"
-            />
-          </div>
-          <div>
-            <label className="font-semibold block">To Date:</label>
-            <DatePicker
-              value={dateTo}
-              onChange={(date) => date && setDateTo(date)}
-              format="YYYY-MM-DD"
-            />
-          </div>
-        </div>
-
         {data.length > 0 ? (
           <>
+            <p className="text-2xl font-bold">Data Terakhir yang di dapatkan</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-blue-300 rounded-xl shadow-md p-4 text-gray-800">
                 <p className="text-2xl font-bold">PPM</p>
@@ -115,12 +122,32 @@ function App() {
           <p>No data found for selected dates.</p>
         )}
         {ppm.time.length > 0 && (
-          <div className="space-y-4">
-            <Chart
-              title="PPM Levels"
-              description="Lower is better"
-              data={ppm}
-            />
+          <div className="mt-6">
+            <p className="text-2xl font-bold ">Data Grafik</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <label className="font-semibold block">From Date:</label>
+                <DatePicker
+                  value={dateFrom}
+                  onChange={(date) => date && setDateFrom(date)}
+                  format="YYYY-MM-DD"
+                />
+              </div>
+              <div>
+                <label className="font-semibold block">To Date:</label>
+                <DatePicker
+                  value={dateTo}
+                  onChange={(date) => date && setDateTo(date)}
+                  format="YYYY-MM-DD"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Chart title="PPM Levels" data={ppm} />
+              <Chart title="Light Levels" data={light} />
+              <Chart title="Temperature Levels" data={temperature} />
+              <Chart title="Humidity Levels" data={humidity} />
+            </div>
           </div>
         )}
       </div>
