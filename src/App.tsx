@@ -102,19 +102,21 @@ function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-blue-300 rounded-xl shadow-md p-4 text-gray-800">
                 <p className="text-2xl font-bold">PPM</p>
-                <p className="text-xl">{data[data.length - 1]?.ppm}</p>
+                <p className="text-xl">{data[data.length - 1]?.ppm} ppm</p>
               </div>
               <div className="bg-blue-300 rounded-xl shadow-md p-4 text-gray-800">
                 <p className="text-2xl font-bold">Humidity</p>
-                <p className="text-xl">{data[data.length - 1]?.humidity}</p>
+                <p className="text-xl">{data[data.length - 1]?.humidity} %</p>
               </div>
               <div className="bg-blue-300 rounded-xl shadow-md p-4 text-gray-800">
                 <p className="text-2xl font-bold">Temperature</p>
-                <p className="text-xl">{data[data.length - 1]?.temperature}</p>
+                <p className="text-xl">
+                  {data[data.length - 1]?.temperature} C
+                </p>
               </div>
               <div className="bg-blue-300 rounded-xl shadow-md p-4 text-gray-800">
                 <p className="text-2xl font-bold">Light</p>
-                <p className="text-xl">{data[data.length - 1]?.light}</p>
+                <p className="text-xl">{data[data.length - 1]?.light} Lux</p>
               </div>
             </div>
           </>
